@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { addEdge, Background, Connection, ConnectionMode, ReactFlow, useEdgesState, useNodesState } from "@xyflow/react";
+import { addEdge, Background, Connection, ConnectionMode, Controls, MiniMap, ReactFlow, useEdgesState, useNodesState } from "@xyflow/react";
 import { Square } from "./nodes/Square";
 import { Circle } from "./nodes/Circle";
 import { Diamond } from "./nodes/Diamond";
@@ -140,6 +140,8 @@ export default function Flow() {
                 defaultEdgeOptions={{ type: 'default' }}
             >
                 <Background />
+                <Controls />
+                <MiniMap />
             </ReactFlow>
 
             <ToolBar.Root className="flex fixed bottom-20 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-lg border border-zinc-300 px-8 h-20 w-[650px] overflow-hidden gap-2">
