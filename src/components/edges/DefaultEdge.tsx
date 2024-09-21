@@ -12,7 +12,7 @@ export default function DefaultEdge({
     sourcePosition,
     targetPosition,
     style = {},
-    data,
+   
     markerEnd,
     onDoubleClick // Adicione o parâmetro onDoubleClick
 }: EdgeProps & { onDoubleClick: (event: any) => void }) {
