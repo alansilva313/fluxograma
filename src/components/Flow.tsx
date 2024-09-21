@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { addEdge, Background, Connection, ConnectionMode, ReactFlow, useEdgesState, useNodesState } from "@xyflow/react";
+import { addEdge, Background, Connection, ConnectionMode, Node, ReactFlow, useEdgesState, useNodesState } from "@xyflow/react";
 import { Square } from "./nodes/Square";
 import { Circle } from "./nodes/Circle";
 import { Diamond } from "./nodes/Diamond";
@@ -7,7 +7,7 @@ import TextNode from "./nodes/TextNode"; // Importe o novo nó de texto
 import '@xyflow/react/dist/style.css';
 import DefaultEdge from "./edges/DefaultEdge";
 import * as ToolBar from "@radix-ui/react-toolbar";
-import { Node } from 'reactflow';
+
 
 const NODE_TYPES = {
     square: Square,
@@ -98,7 +98,7 @@ export default function Flow() {
         }
     };
 
-    const loadFlow = (flow: { nodes: any[], edges: any[] }) => {
+    const loadFlow = (flow: { nodes: any, edges: any }) => {
         setNodes(flow.nodes);
         setEdges(flow.edges);
     };

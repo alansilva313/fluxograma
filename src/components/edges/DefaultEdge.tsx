@@ -15,7 +15,7 @@ export default function DefaultEdge({
     data,
     markerEnd,
     onDoubleClick // Adicione o parâmetro onDoubleClick
-}: EdgeProps & { onDoubleClick: (event: React.MouseEvent) => void }) {
+}: EdgeProps & { onDoubleClick: (event: any) => void }) {
 
     const [edgePath] = getSmoothStepPath({
         sourceX,
@@ -26,7 +26,7 @@ export default function DefaultEdge({
         targetPosition
     });
 
-    const handleDoubleClick = (event: React.MouseEvent) => {
+    const handleDoubleClick = () => {
         // Cálculo da posição no meio da aresta
         const midX = (sourceX + targetX) / 2;
         const midY = (sourceY + targetY) / 2;

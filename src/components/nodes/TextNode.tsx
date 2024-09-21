@@ -19,7 +19,7 @@ const TextNode = ({ data, selected }: any) => {
         setText(event.target.value);
     };
 
-    const handleMouseMove = useCallback((event: MouseEvent) => {
+    const handleMouseMove = useCallback((event: MouseEvent ) => {
         if (isResizing) {
             if (event.shiftKey) {
                 // Aumentar ou diminuir a fonte ao segurar Shift
@@ -35,7 +35,7 @@ const TextNode = ({ data, selected }: any) => {
             window.removeEventListener("mouseup", handleMouseUp);
         };
 
-        const handleMouseDown = (event: MouseEvent) => {
+        const handleMouseDown = (event: any) => {
             if (selected && event.target.classList.contains("resize-handle")) {
                 setIsResizing(true);
                 window.addEventListener("mousemove", handleMouseMove);

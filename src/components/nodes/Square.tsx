@@ -66,7 +66,7 @@ export function Square({ selected, data }: NodeProps) {
             {isEditing ? (
                 <input
                     type="text"
-                    value={label}
+                    value={String(label)}
                     onChange={(e) => setLabel(e.target.value)}
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
@@ -75,7 +75,7 @@ export function Square({ selected, data }: NodeProps) {
                 />
             ) : (
                 <div className="text-white">
-                    {label}
+                    {String(label)}
                 </div>
             )}
         </div>
