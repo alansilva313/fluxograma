@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { addEdge, Background, Connection, ConnectionMode, Node, ReactFlow, useEdgesState, useNodesState } from "@xyflow/react";
+import { addEdge, Background, Connection, ConnectionMode, ReactFlow, useEdgesState, useNodesState } from "@xyflow/react";
 import { Square } from "./nodes/Square";
 import { Circle } from "./nodes/Circle";
 import { Diamond } from "./nodes/Diamond";
@@ -7,13 +7,15 @@ import TextNode from "./nodes/TextNode"; // Importe o novo nó de texto
 import '@xyflow/react/dist/style.css';
 import DefaultEdge from "./edges/DefaultEdge";
 import * as ToolBar from "@radix-ui/react-toolbar";
+import { Node, Edge } from '@xyflow/react'; // Importando tipos
 
+import { jsPDF } from "jspdf";
 
 const NODE_TYPES = {
     square: Square,
     circle: Circle,
     diamond: Diamond,
-    text: TextNode, // Adicione o tipo de nó de texto
+    text: TextNode,
 };
 
 const EDGE_TYPES = {
@@ -21,62 +23,39 @@ const EDGE_TYPES = {
 };
 
 export default function Flow() {
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
     const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
     const [flowTitle, setFlowTitle] = useState('');
-    const [savedFlows, setSavedFlows] = useState<{ title: string, flow: { nodes: any[], edges: any[] } }[]>([]);
+    const [savedFlows, setSavedFlows] = useState<{ title: string, flow: { nodes: Node[], edges: Edge[] } }[]>([]);
 
     const onConnect = useCallback((connection: Connection) => {
         setEdges((edges) => addEdge(connection, edges));
     }, []);
 
-    function addSquareNode() {
-        const newNode: Node = {
-            id: crypto.randomUUID(),
-            type: 'square',
-            position: { x: 750, y: 350 },
-            data: { name: "New Square", nodeType: "decisão" } // Mapeando tipo
-        };
-        setNodes((nodes) => [...nodes, newNode]);
-    }
+    // Função para gerar PDF
+    const downloadPDF = (flowTitle: string, flow: { nodes: Node[], edges: Edge[] }) => {
+        const doc = new jsPDF();
+        doc.text(`Fluxo: ${flowTitle}`, 10, 10);
 
-    function addCircleNode() {
-        const newNode: Node = {
-            id: crypto.randomUUID(),
-            type: 'circle',
-            position: { x: 300, y: 300 },
-            data: { nodeType: "pergunta" } // Mapeando tipo
-        };
-        setNodes((nodes) => [...nodes, newNode]);
-    }
+        flow.nodes.forEach((node, index) => {
+            doc.text(`Nó ${index + 1}: ${node.data.text || 'Sem texto'}`, 10, 20 + index * 10);
+        });
 
-    function addDiamondNode() {
-        const newNode: Node = {
-            id: crypto.randomUUID(),
-            type: 'diamond',
-            position: { x: 500, y: 500 },
-            data: { nodeType: "resposta" } // Mapeando tipo
-        };
-        setNodes((nodes) => [...nodes, newNode]);
-    }
-
-    function addTextNode(position?: { x: number, y: number }) {
-        const newNode: Node = {
-            id: crypto.randomUUID(),
-            type: 'text',
-            position: position || { x: 400, y: 400 }, // Usa a posição passada ou padrão
-            data: { text: "Novo Texto", nodeType: "finalização" } // Mapeando tipo
-        };
-        setNodes((nodes) => [...nodes, newNode]);
-    }
+        doc.save(`${flowTitle}.pdf`);
+    };
 
     const onSave = () => {
+        if (!flowTitle.trim()) {
+            alert("O título do fluxo não pode estar vazio.");
+            return;
+        }
+
         const flow = { 
             nodes: nodes.map(node => ({
                 id: node.id,
                 type: node.type,
                 position: node.position,
-                data: { ...node.data, text: node.data.text || "" } // Inclui texto caso exista
+                data: { ...node.data, text: node.data.text || "" } 
             })), 
             edges 
         };
@@ -98,13 +77,53 @@ export default function Flow() {
         }
     };
 
-    const loadFlow = (flow: { nodes: any, edges: any }) => {
+    const loadFlow = (flow: { nodes: Node[], edges: Edge[] }) => {
         setNodes(flow.nodes);
         setEdges(flow.edges);
     };
 
     const handleDoubleClickOnEdge = (position: { x: number, y: number }) => {
-        addTextNode(position); // Adiciona um nó de texto na posição clicada
+        addTextNode(position); 
+    };
+
+    const addSquareNode = () => {
+        const newNode: Node = {
+            id: crypto.randomUUID(),
+            type: 'square',
+            position: { x: 750, y: 350 },
+            data: { name: "New Square" }
+        };
+        setNodes((nodes) => [...nodes, newNode]);
+    };
+
+    const addCircleNode = () => {
+        const newNode: Node = {
+            id: crypto.randomUUID(),
+            type: 'circle',
+            position: { x: 300, y: 300 },
+            data: {}
+        };
+        setNodes((nodes) => [...nodes, newNode]);
+    };
+
+    const addDiamondNode = () => {
+        const newNode: Node = {
+            id: crypto.randomUUID(),
+            type: 'diamond',
+            position: { x: 500, y: 500 },
+            data: {}
+        };
+        setNodes((nodes) => [...nodes, newNode]);
+    };
+
+    const addTextNode = (position?: { x: number, y: number }) => {
+        const newNode: Node = {
+            id: crypto.randomUUID(),
+            type: 'text',
+            position: position || { x: 400, y: 400 },
+            data: { text: "Novo Texto" }
+        };
+        setNodes((nodes) => [...nodes, newNode]);
     };
 
     return (
@@ -112,7 +131,7 @@ export default function Flow() {
             <ReactFlow
                 nodeTypes={NODE_TYPES}
                 nodes={nodes}
-                edgeTypes={{ ...EDGE_TYPES, default: (props) => <DefaultEdge {...props} onDoubleClick={handleDoubleClickOnEdge} /> }} // Passa a função para o edge
+                edgeTypes={{ ...EDGE_TYPES, default: (props) => <DefaultEdge {...props} onDoubleClick={handleDoubleClickOnEdge} /> }} 
                 connectionMode={ConnectionMode.Loose}
                 edges={edges}
                 onEdgesChange={onEdgesChange}
@@ -120,10 +139,7 @@ export default function Flow() {
                 onNodesChange={onNodesChange}
                 defaultEdgeOptions={{ type: 'default' }}
             >
-                <Background
-                 bgColor="#ffff"
-                 lineWidth={2}
-                />
+                <Background />
             </ReactFlow>
 
             <ToolBar.Root className="flex fixed bottom-20 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-lg border border-zinc-300 px-8 h-20 w-[650px] overflow-hidden gap-2">
@@ -158,6 +174,11 @@ export default function Flow() {
                                     onClick={() => loadFlow(savedFlow.flow)}
                                     className="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400">
                                     Carregar
+                                </button>
+                                <button
+                                    onClick={() => downloadPDF(savedFlow.title, savedFlow.flow)}
+                                    className="bg-red-300 px-2 py-1 rounded hover:bg-red-400">
+                                    Download PDF
                                 </button>
                             </li>
                         ))}
