@@ -10,6 +10,8 @@ import * as ToolBar from "@radix-ui/react-toolbar";
 import { Node, Edge } from '@xyflow/react'; // Importando tipos
 
 import { jsPDF } from "jspdf";
+import Logout from "@/components/Logout";
+
 
 const NODE_TYPES = {
     square: Square,
@@ -128,6 +130,12 @@ export default function Flow() {
 
     return (
         <div className="w-full h-screen">
+
+
+                  
+                  <Logout />
+
+
             <ReactFlow
                 nodeTypes={NODE_TYPES}
                 nodes={nodes}
@@ -152,6 +160,8 @@ export default function Flow() {
             </ToolBar.Root>
 
             <div className="flex flex-col w-[350px] h-[550px] mt-20 fixed top-5 left-5 gap-4">
+
+             
                 <input
                     type="text"
                     placeholder="Título do fluxo"
@@ -159,6 +169,7 @@ export default function Flow() {
                     onChange={(e) => setFlowTitle(e.target.value)}
                     className="border p-2"
                 />
+                
                 <button onClick={onSave} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Salvar Fluxo
                 </button>

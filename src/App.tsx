@@ -1,13 +1,20 @@
 
+import { Outlet } from 'react-router-dom'
 
-import Flow from './components/Flow'
+
 
 function App() {
   
 
   return (
     <div className='w-full h-screen'>
-      <Flow />
+     
+
+          
+          
+            <Outlet />
+ 
+      
     </div>
   )
 }
